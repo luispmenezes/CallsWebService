@@ -1,0 +1,3 @@
+CREATE USER callWsAppUser WITH ENCRYPTED PASSWORD 'callws123';
+GRANT callWsAppUser TO postgres;
+CREATE SCHEMA callWs AUTHORIZATION callWsAppUser;
