@@ -28,7 +28,7 @@ func (pm *PGManager) AddCalls(calls *[]model.Call) error {
 	return pm.Database.Insert(calls)
 }
 
-func (pm *PGManager) RemoveCall(filterParams map[string]interface{}) error {
+func (pm *PGManager) RemoveCall(filterParams map[string]interface{}) (int,error) {
 	query := pm.Database.Model(&model.Call{})
 
 	if len(filterParams) > 0 {
@@ -43,9 +43,10 @@ func (pm *PGManager) RemoveCall(filterParams map[string]interface{}) error {
 
 	if err == nil && res != nil {
 		log.Printf("Removed %d calls", res.RowsAffected())
+		return res.RowsAffected(), err
 	}
 
-	return err
+	return 0,err
 }
 
 func (pm *PGManager) GetCalls(filterParams map[string]interface{}, pageIdx, pageSize int) (model.CallQueryResult, error) {

@@ -1,0 +1,247 @@
+swagger: "2.0"
+info:
+  description: "This is the api for the take home code challenge implementiong a service to manage calls."
+  version: "1.0.0"
+  title: "Calls Web Service"
+host: "localhost"
+basePath: "/"
+schemes:
+- "https"
+- "http"
+paths:
+  /call:
+    put:
+      tags:
+      - "Call Information"
+      summary: "Add new calls"
+      description: "Create one or more calls.\nA Call must contain:\n - A Caller and Calle phone numbers flowing the [E.164 format](https://en.wikipedia.org/wiki/E.164)\n - A Start Date following the [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format\n - A boolean value specifing if the call is inbound(true) or outbound(false)"
+      operationId: "addCalls"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "List of calls to be added"
+        required: true
+        schema:
+          $ref: "#/definitions/ListOfCalls"
+      responses:
+        201:
+          description: "The request was sucessful and the calls where added"
+        200:
+          description: "The request was sucessful but no new calls where created"
+        400:
+          description: "The request was rejected due to invalid call format"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/ValidationError"
+    get:
+      tags:
+      - "Call Information"
+      summary: "Get calls"
+      description: "Get all calls, paginated. matching the provided filters"
+      operationId: "getCalls"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "query"
+        name: "page"
+        type: integer
+        description: Result page number (default:0)
+        required: false
+      - in: "query"
+        name: "pageSize"
+        type: integer
+        description: Result page size (default:50)
+        required: false
+      - in: "query"
+        name: "caller"
+        type: string
+        description: Phone number of the caller in the E.164 format
+        required: false
+      - in: "query"
+        name: "callee"
+        type: string
+        description: Phone number of the callee in the E.164 format
+        required: false
+      - in: "query"
+        name: "startTime"
+        type: string
+        description: Call start time in the ISO 8601 format
+        required: false
+      - in: "query"
+        name: "endTime"
+        type: string
+        description: Call end time in the ISO 8601 format
+        required: false
+      - in: "query"
+        name: "inbound"
+        type: boolean
+        description: Specify call type 
+        required: false
+      - in: "query"
+        name: "duration"
+        type: integer
+        description: Call duration in minutes
+        required: false
+      - in: "query"
+        name: "cost"
+        type: integer
+        description: Call cost as an integer using four decimal places
+        required: false
+      responses:
+        200:
+          description: "Successfuly obtained calls"
+        400:
+          description: "Invalid filter parameters"
+    delete:
+      tags:
+      - "Call Information"
+      summary: "Delete calls"
+      description: "Delete all calls matching the provided filter"
+      operationId: "deleteCalls"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "query"
+        name: "caller"
+        type: string
+        description: Phone number of the caller in the E.164 format
+        required: false
+      - in: "query"
+        name: "callee"
+        type: string
+        description: Phone number of the callee in the E.164 format
+        required: false
+      - in: "query"
+        name: "startTime"
+        type: string
+        description: Call start time in the ISO 8601 format
+        required: false
+      - in: "query"
+        name: "endTime"
+        type: string
+        description: Call end time in the ISO 8601 format
+        required: false
+      - in: "query"
+        name: "inbound"
+        type: boolean
+        description: Specify call type 
+        required: false
+      - in: "query"
+        name: "duration"
+        type: integer
+        description: Call duration in minutes
+        required: false
+      - in: "query"
+        name: "cost"
+        type: integer
+        description: Call cost as an integer using four decimal places
+        required: false
+      responses:
+        200:
+          description: "Successfuly deleted calls"
+        204:
+          description: "Valid request but no calls where deleted"
+        400:
+          description: "Invalid filter parameters"
+  /metadata:
+    get:
+      tags:
+      - "Call Statistics"
+      summary: "Get Call Metadata"
+      description: "Get metadata for all calls aggreagated by day\n - StartTime: start time of the first call in the day\n - EndTime: start time of the las call in the day\n - TotalInboundDuration: total duration of inbound calls\n - TotalOutboundDuration: total duration of outbound calls\n - TotalCallCost: cost of all calls\n - CallsByCaller: map of calls by caller\n - CallsByCallee: map of calls by callee"
+      operationId: "getMetadata"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+
+      responses:
+        200:
+          description: "Sucessfuly obtained metadata"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Metadata"
+definitions:
+  ListOfCalls:
+    type: "array"
+    items: {
+      $ref: "#/definitions/Call" 
+    }
+  Call:
+    type: "object"
+    properties:
+      Caller:
+        type: "string"
+        example: "+351123456"
+      Callee:
+        type: "string"
+        example: "001654321"
+      StartTime:
+        type: "string"
+        example: "2020-01-01T04:05:06Z"
+      EndTime:
+        type: "string"
+        example: "2020-01-01T05:05:06Z"
+      IsInbound:
+        type: "boolean"
+        example: true
+  ValidationError:
+    type: "object"
+    properties:
+      Id:
+        type: "string"
+        example: "+351123456-2020-01-01T04:05:06Z"
+      Description:
+        type: "string"
+        example: "Invalid caller format (digits optionally preceded by country code)"
+  Metadata:
+    type: "object"
+    properties:
+      StartTime:
+        type: "string"
+        example: "2020-01-01T04:05:06Z"
+      EndTime:
+        type: "string"
+        example: "2020-01-01T05:05:06Z"
+      TotalInboundDuration:
+        type: "integer"
+        example: 20
+      TotalOutboundDuration:
+        type: "integer"
+        example: 240
+      TotalCalls:
+        type: "integer"
+        example: 5  
+      TotalCallCost:
+        type: "integer"
+        example: 12000000
+      CallsByCaller:
+        type: "object"
+        properties: {
+                12345: {
+                    example: 3,
+                    type: integer
+                },
+                34512: {
+                    example: 7,
+                    type: integer
+                }
+            }
+      CallsByCallee:
+        type: "object"
+        properties: {
+                12345: {
+                    example: 12,
+                    type: integer
+                },
+                34512: {
+                    example: 70,
+                    type: integer
+                }
+            }

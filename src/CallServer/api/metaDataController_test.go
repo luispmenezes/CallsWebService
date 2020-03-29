@@ -17,7 +17,7 @@ func (m *MetaDataMockPersistenceManager) AddCalls(calls *[]model.Call) error {
 	panic("not implemented")
 }
 
-func (m *MetaDataMockPersistenceManager) RemoveCall(filterParams map[string]interface{}) error {
+func (m *MetaDataMockPersistenceManager) RemoveCall(filterParams map[string]interface{}) (int,error) {
 	panic("not implemented")
 }
 

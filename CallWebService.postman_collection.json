@@ -1,0 +1,126 @@
+{
+	"info": {
+		"_postman_id": "28fe858b-9443-40d2-8444-527b1c273f1d",
+		"name": "CallWebService",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get All Calls",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8989/call",
+					"host": [
+						"localhost"
+					],
+					"port": "8989",
+					"path": [
+						"call"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Metadata",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8989/metadata",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8989",
+					"path": [
+						"metadata"
+					],
+					"query": [
+						{
+							"key": "startTime",
+							"value": "1980-03-29T11:20:52.39Z",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add Calls",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "[\n    {\n        \"Caller\": \"123\",\n        \"Callee\": \"321\",\n        \"StartTime\": \"2020-01-08T04:05:06Z\",\n        \"EndTime\": \"2020-01-08T05:05:16Z\",\n        \"Inbound\": true\n    },\n    {\n        \"Caller\": \"321\",\n        \"Callee\": \"123\",\n        \"StartTime\": \"2020-01-08T04:06:06Z\",\n        \"EndTime\": \"2020-01-08T07:06:16Z\",\n        \"Inbound\": false\n    }\n]",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8989/call",
+					"host": [
+						"localhost"
+					],
+					"port": "8989",
+					"path": [
+						"call"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Calls",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "localhost:8989/call?",
+					"host": [
+						"localhost"
+					],
+					"port": "8989",
+					"path": [
+						"call"
+					],
+					"query": [
+						{
+							"key": "caller",
+							"value": "123",
+							"disabled": true
+						},
+						{
+							"key": "callee",
+							"value": "123",
+							"disabled": true
+						}
+					]
+				},
+				"description": "Delete calls"
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}

@@ -2,6 +2,7 @@ package model
 
 import (
 	"CallServer/config"
+	"github.com/go-playground/assert/v2"
 	"testing"
 	"time"
 )
@@ -34,13 +35,8 @@ func TestDurationAndCost(t *testing.T) {
 	}
 	outBoundCall.ComputeDurationAndCost()
 
-	if outBoundCall.Duration != 60 {
-		t.Errorf("Invalid outbound duration, expected %d got %d", 60, outBoundCall.Duration)
-	}
-
-	if outBoundCall.Cost != 5750000 {
-		t.Errorf("Invalid outbound cost, expected %d got %d", 5750000, outBoundCall.Cost)
-	}
+	assert.Equal(t, outBoundCall.Duration, uint16(60))
+	assert.Equal(t, outBoundCall.Cost, uint32(5750000))
 
 	inBoundCall := &Call{
 		StartTime: time.Now().Add(time.Duration(-2) * time.Hour),
@@ -49,13 +45,8 @@ func TestDurationAndCost(t *testing.T) {
 	}
 	inBoundCall.ComputeDurationAndCost()
 
-	if inBoundCall.Duration != 120 {
-		t.Errorf("Invalid outbound duration, expected %d got %d", 120, inBoundCall.Duration)
-	}
-
-	if inBoundCall.Cost != 0 {
-		t.Errorf("Invalid outbound cost, expected %d got %d", 0, inBoundCall.Cost)
-	}
+	assert.Equal(t, inBoundCall.Duration, uint16(120))
+	assert.Equal(t, inBoundCall.Cost, uint32(0))
 }
 
 func TestCallValidation(t *testing.T) {
@@ -81,16 +72,12 @@ func TestCallValidation(t *testing.T) {
 
 	validationErrors := call.Validate()
 
-	if len(validationErrors) > 0 {
-		t.Errorf("Unexpected validation errors found, expected none got %s", validationErrors)
-	}
+	assert.Equal(t, len(validationErrors), 0)
 
 	call.Caller = "aaaa"
 	call.Callee = "aaaa"
 	call.EndTime = call.StartTime.Add(time.Duration(-60) * time.Minute)
 	validationErrors = call.Validate()
 
-	if len(validationErrors) != 4 {
-		t.Errorf("Unexpected validation erros found, expected %d got %s", 4, validationErrors)
-	}
+	assert.Equal(t, len(validationErrors), 4)
 }

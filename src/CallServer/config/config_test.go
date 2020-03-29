@@ -1,6 +1,7 @@
 package config
 
 import (
+	"github.com/go-playground/assert/v2"
 	"testing"
 )
 
@@ -32,7 +33,5 @@ func TestLoadConfigurationFromString(t *testing.T) {
 		t.Errorf("Failed to parse configuration string (error: %s)", err)
 	}
 
-	if GetConfiguration().Server.PhoneNumberRegex != "^(\\+|00)[0-9]{2,}|[0-9]+$" {
-		t.Errorf("Failed to reading phone number regex expected %s got %s)", "^(\\+|00)[0-9]{2,}|[0-9]+$", GetConfiguration().Server.PhoneNumberRegex)
-	}
+	assert.Equal(t,GetConfiguration().Server.PhoneNumberRegex,"^(\\+|00)[0-9]{2,}|[0-9]+$")
 }

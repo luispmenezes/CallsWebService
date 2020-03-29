@@ -3,10 +3,12 @@ package api
 import (
 	"CallServer/model"
 	"encoding/json"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -30,10 +32,14 @@ func (b *BaseController) CreateCalls(c *gin.Context) {
 	} else {
 		err := b.Persistence.AddCalls(callArray)
 		if err != nil {
-			log.Println(err)
-			c.String(http.StatusInternalServerError, "")
+			if strings.Contains(err.Error(), " ERROR #23505 duplicate key") {
+				c.String(http.StatusOK, "Calls already exist")
+			} else {
+				log.Println(err)
+				c.String(http.StatusInternalServerError, "")
+			}
 		} else {
-			c.String(http.StatusOK, "")
+			c.String(http.StatusCreated, "")
 		}
 	}
 }
@@ -45,13 +51,16 @@ func (b *BaseController) DeleteCall(c *gin.Context) {
 		c.String(http.StatusBadRequest, "Invalid filter params")
 	}
 
-	err = b.Persistence.RemoveCall(filterParams)
+	var affectedCalls int
+	affectedCalls, err = b.Persistence.RemoveCall(filterParams)
 
 	if err != nil {
 		log.Println(err)
 		c.String(http.StatusInternalServerError, "")
+	} else if affectedCalls > 0 {
+		c.String(http.StatusOK, fmt.Sprintf("Removed %d calls", affectedCalls))
 	} else {
-		c.String(http.StatusOK, "")
+		c.String(http.StatusNoContent, "No calls where deleted")
 	}
 }
 

@@ -28,11 +28,11 @@ func (m *CallMockPersistenceManager) AddCalls(calls *[]model.Call) error {
 	return nil
 }
 
-func (m *CallMockPersistenceManager) RemoveCall(filterParams map[string]interface{}) error {
+func (m *CallMockPersistenceManager) RemoveCall(filterParams map[string]interface{}) (int,error) {
 	if len(filterParams) != 3 {
-		return errors.New("invalid params")
+		return 0,errors.New("invalid params")
 	}
-	return nil
+	return 1,nil
 }
 
 func (m *CallMockPersistenceManager) GetCalls(filterParams map[string]interface{}, pageIdx, pageSize int) (model.CallQueryResult, error) {
@@ -104,7 +104,7 @@ func TestBaseController_CreateCalls(t *testing.T) {
 
 	response := performCallRequest(baseController.Engine, bytes.NewBuffer(jsonBody), "PUT", "/call")
 
-	assert.Equal(t, http.StatusOK, response.Code)
+	assert.Equal(t, http.StatusCreated, response.Code)
 }
 
 func TestBaseController_RemoveCall(t *testing.T) {
