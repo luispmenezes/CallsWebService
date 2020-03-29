@@ -17,7 +17,7 @@ func (m *MetaDataMockPersistenceManager) AddCalls(calls *[]model.Call) error {
 	panic("not implemented")
 }
 
-func (m *MetaDataMockPersistenceManager) RemoveCall(filterParams map[string]interface{}) (int,error) {
+func (m *MetaDataMockPersistenceManager) RemoveCall(filterParams map[string]interface{}) (int, error) {
 	panic("not implemented")
 }
 
@@ -27,8 +27,7 @@ func (m *MetaDataMockPersistenceManager) GetCalls(filterParams map[string]interf
 
 func (m *MetaDataMockPersistenceManager) GetMetadata() ([]model.CallMetadata, error) {
 	return []model.CallMetadata{{
-		StartTime:             time.Time{},
-		EndTime:               time.Time{},
+		Day:                   time.Time{},
 		TotalInboundDuration:  1,
 		TotalOutboundDuration: 2,
 		TotalCalls:            3,

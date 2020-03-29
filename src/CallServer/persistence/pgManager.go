@@ -28,7 +28,7 @@ func (pm *PGManager) AddCalls(calls *[]model.Call) error {
 	return pm.Database.Insert(calls)
 }
 
-func (pm *PGManager) RemoveCall(filterParams map[string]interface{}) (int,error) {
+func (pm *PGManager) RemoveCall(filterParams map[string]interface{}) (int, error) {
 	query := pm.Database.Model(&model.Call{})
 
 	if len(filterParams) > 0 {
@@ -46,7 +46,7 @@ func (pm *PGManager) RemoveCall(filterParams map[string]interface{}) (int,error)
 		return res.RowsAffected(), err
 	}
 
-	return 0,err
+	return 0, err
 }
 
 func (pm *PGManager) GetCalls(filterParams map[string]interface{}, pageIdx, pageSize int) (model.CallQueryResult, error) {
@@ -73,7 +73,7 @@ func (pm *PGManager) GetCalls(filterParams map[string]interface{}, pageIdx, page
 		query = query.Where(key+" = ?", value)
 	}
 
-	err = query.Limit(pageSize).Offset(pageIdx).Select()
+	err = query.Limit(pageSize).Offset(pageIdx * pageSize).Select()
 
 	return model.CallQueryResult{
 		Page:       pageIdx,
@@ -88,12 +88,13 @@ func (pm *PGManager) GetMetadata() ([]model.CallMetadata, error) {
 	var queryResults []model.MetadataQueryResult
 
 	err := pm.Database.Model(&model.Call{}).
-		Column("start_time", "caller", "callee", "inbound").
+		Column("caller", "callee", "inbound").
+		ColumnExpr("date_trunc('day',start_time) as day").
 		ColumnExpr("COUNT(*) as count").
 		ColumnExpr("SUM(duration) as total_duration").
 		ColumnExpr("SUM(call_cost) as total_cost").
-		Group("start_time", "caller", "callee", "inbound").
-		Order("start_time ASC").
+		Group("day", "caller", "callee", "inbound").
+		Order("day ASC").
 		Select(&queryResults)
 
 	if err != nil {
@@ -104,8 +105,7 @@ func (pm *PGManager) GetMetadata() ([]model.CallMetadata, error) {
 
 	if len(queryResults) > 0 {
 		metaData := model.CallMetadata{
-			StartTime:     queryResults[0].StartTime,
-			EndTime:       queryResults[0].StartTime,
+			Day:           queryResults[0].Day,
 			CallsByCaller: map[string]uint32{},
 			CallsByCallee: map[string]uint32{},
 		}
@@ -123,16 +123,13 @@ func (pm *PGManager) GetMetadata() ([]model.CallMetadata, error) {
 			metaData.CallsByCaller[queryEntry.Caller] += uint32(queryEntry.Count)
 			metaData.CallsByCallee[queryEntry.Callee] += uint32(queryEntry.Count)
 
-			if metaData.StartTime.Sub(queryEntry.StartTime).Hours() > 24 {
+			if queryEntry.Day.Sub(metaData.Day).Hours() > 24 {
 				result = append(result, metaData)
 				metaData = model.CallMetadata{
-					StartTime:     metaData.StartTime,
-					EndTime:       queryResults[0].StartTime,
+					Day:           queryEntry.Day,
 					CallsByCaller: map[string]uint32{},
 					CallsByCallee: map[string]uint32{},
 				}
-			} else {
-				metaData.EndTime = queryEntry.StartTime
 			}
 		}
 		result = append(result, metaData)

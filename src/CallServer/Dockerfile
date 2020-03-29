@@ -6,4 +6,4 @@ COPY  . .
 
 RUN go build
 
-CMD [ "go", "run CallServer" ]git 
+CMD [ "./CallServer" ]

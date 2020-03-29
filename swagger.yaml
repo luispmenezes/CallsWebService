@@ -203,12 +203,9 @@ definitions:
   Metadata:
     type: "object"
     properties:
-      StartTime:
+      Day:
         type: "string"
-        example: "2020-01-01T04:05:06Z"
-      EndTime:
-        type: "string"
-        example: "2020-01-01T05:05:06Z"
+        example: "2020-01-01T00:00:00Z"
       TotalInboundDuration:
         type: "integer"
         example: 20
