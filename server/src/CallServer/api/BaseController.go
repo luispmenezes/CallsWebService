@@ -17,14 +17,14 @@ func NewBaseController(persistence *persistence.Manager) *BaseController {
 	}
 }
 
-func (b *BaseController) initializeRoutes(){
+func (b *BaseController) initializeRoutes() {
 	b.Engine.PUT("/call", b.CreateCalls)
 	b.Engine.DELETE("/call", b.DeleteCall)
 	b.Engine.GET("/call", b.GetAllCalls)
-	b.Engine.GET("/callMetadata", b.GetCallMetadata)
+	b.Engine.GET("/metadata", b.GetCallMetadata)
 }
 
 func (b *BaseController) Start(port string) error {
 	b.initializeRoutes()
-	return b.Engine.Run(":"+port)
+	return b.Engine.Run(":" + port)
 }
