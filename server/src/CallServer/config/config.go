@@ -32,7 +32,7 @@ type Config struct {
 
 var configuration Config
 
-func LoadConfiguration(confFilePath string) error {
+func LoadConfigurationFromPath(confFilePath string) error {
 	log.Printf("Loading Configuration file (%s)", confFilePath)
 
 	absConfPath, err := filepath.Abs(confFilePath)
@@ -47,6 +47,11 @@ func LoadConfiguration(confFilePath string) error {
 
 	jsonParser := json.NewDecoder(configFile)
 	return jsonParser.Decode(&configuration)
+}
+
+func LoadConfigurationFromString(confJSONStr string) error {
+	log.Printf("Loading Configuration String (%s)", confJSONStr)
+	return json.Unmarshal([]byte(confJSONStr), &configuration)
 }
 
 func GetConfiguration() Config {

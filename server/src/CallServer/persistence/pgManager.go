@@ -11,13 +11,13 @@ import (
 
 const DefaultPageSize = 50
 
-type Manager struct {
+type PGManager struct {
 	Database *pg.DB
 }
 
-func NewManager(host, port, database, username, password string) *Manager {
+func NewPGManager(host, port, database, username, password string) *PGManager {
 	log.Printf("Starting Persistence manager (host:%s, port:%s, db:%s user:%s)", host, port, database, username)
-	return &Manager{Database: pg.Connect(&pg.Options{
+	return &PGManager{Database: pg.Connect(&pg.Options{
 		Addr:     fmt.Sprintf("%s:%s", host, port),
 		Database: database,
 		User:     username,
@@ -25,11 +25,11 @@ func NewManager(host, port, database, username, password string) *Manager {
 	})}
 }
 
-func (pm *Manager) AddCalls(calls *[]model.Call) error {
+func (pm *PGManager) AddCalls(calls *[]model.Call) error {
 	return pm.Database.Insert(calls)
 }
 
-func (pm *Manager) RemoveCall(filterParams map[string]interface{}) error {
+func (pm *PGManager) RemoveCall(filterParams map[string]interface{}) error {
 	query := pm.Database.Model(&model.Call{})
 
 	if len(filterParams) > 0 {
@@ -49,7 +49,7 @@ func (pm *Manager) RemoveCall(filterParams map[string]interface{}) error {
 	return err
 }
 
-func (pm *Manager) GetCalls(filterParams map[string]interface{}, pageIdx, pageSize int) (model.CallQueryResult, error) {
+func (pm *PGManager) GetCalls(filterParams map[string]interface{}, pageIdx, pageSize int) (model.CallQueryResult, error) {
 	if pageSize == 0 || pageSize > DefaultPageSize {
 		pageSize = DefaultPageSize
 	}
@@ -83,7 +83,7 @@ func (pm *Manager) GetCalls(filterParams map[string]interface{}, pageIdx, pageSi
 	}, err
 }
 
-func (pm *Manager) GetMetadata(startTime time.Time, endTime time.Time) (model.CallMetadata, error) {
+func (pm *PGManager) GetMetadata(startTime time.Time, endTime time.Time) (model.CallMetadata, error) {
 	callMetadata := model.CallMetadata{}
 	var queryResults []model.MetadataQueryResult
 

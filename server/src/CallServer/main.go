@@ -12,16 +12,16 @@ const DefaultConfigPath = "./config.json"
 func main() {
 	configFilePath := DefaultConfigPath
 
-	err := config.LoadConfiguration(configFilePath)
+	err := config.LoadConfigurationFromPath(configFilePath)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	conf := config.GetConfiguration()
 
-	var persistenceManager = persistence.NewManager(conf.Database.Host, conf.Database.Port, conf.Database.Dbname,
+	persistenceManager := persistence.NewPGManager(conf.Database.Host, conf.Database.Port, conf.Database.Dbname,
 		conf.Database.User, conf.Database.Password)
-	var apiController = api.NewBaseController(persistenceManager)
+	apiController := api.NewBaseController(persistenceManager)
 	err = apiController.Start(conf.Server.Port)
 
 	if err != nil {

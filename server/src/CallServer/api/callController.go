@@ -59,7 +59,7 @@ func (b *BaseController) GetAllCalls(c *gin.Context) {
 	pageNumStr := c.Query("page")
 	pageSizeStr := c.Query("pageSize")
 
-	filterParams,err := b.getFilterParams(c)
+	filterParams, err := b.getFilterParams(c)
 
 	if err != nil {
 		c.String(http.StatusBadRequest, "Invalid filter params")
@@ -97,7 +97,7 @@ func (b *BaseController) getFilterParams(c *gin.Context) (map[string]interface{}
 		params["callee"] = calleeSrt
 	}
 
-	if startTimeStr := c.Query("start_time"); len(startTimeStr) > 0 {
+	if startTimeStr := c.Query("startTime"); len(startTimeStr) > 0 {
 		startTime, err := time.Parse(time.RFC3339, startTimeStr)
 		if err != nil {
 			log.Printf("Error parsing start date %s", startTimeStr)
@@ -106,7 +106,7 @@ func (b *BaseController) getFilterParams(c *gin.Context) (map[string]interface{}
 		params["start_time"] = startTime
 	}
 
-	if endTimeStr := c.Query("end_time"); len(endTimeStr) > 0 {
+	if endTimeStr := c.Query("endTime"); len(endTimeStr) > 0 {
 		endTime, err := time.Parse(time.RFC3339, endTimeStr)
 		if err != nil {
 			log.Printf("Error parsing end date %s", endTimeStr)

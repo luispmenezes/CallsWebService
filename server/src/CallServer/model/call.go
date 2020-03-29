@@ -6,8 +6,6 @@ import (
 	"time"
 )
 
-var callerFormatRegex = regexp.MustCompile(config.GetConfiguration().Server.PhoneNumberRegex)
-
 type Call struct {
 	tableName struct{}  `pg:"callws.call_data"`
 	Caller    string    `pg:"caller,pk"`
@@ -34,7 +32,7 @@ func (c *Call) ComputeDurationAndCost() {
 	} else {
 		if c.Duration > callCost.OutboundPriceThreshold {
 			c.Cost = (uint32(callCost.OutboundPriceThreshold) * callCost.OutboundPrice1) +
-				uint32(c.Duration-callCost.OutboundPriceThreshold)*callCost.OutboundPrice1
+				uint32(c.Duration-callCost.OutboundPriceThreshold)*callCost.OutboundPrice2
 		} else {
 			c.Cost = uint32(c.Duration) * callCost.OutboundPrice1
 		}
@@ -44,8 +42,9 @@ func (c *Call) ComputeDurationAndCost() {
 
 func (c *Call) Validate() []ValidationError {
 	var errorList []ValidationError
+	var callerFormatRegex = regexp.MustCompile(config.GetConfiguration().Server.PhoneNumberRegex)
 
-	callId := c.Caller + c.StartTime.String()
+	callId := c.Caller + "-" + c.Callee + "-" + c.StartTime.String()
 
 	if !callerFormatRegex.MatchString(c.Caller) {
 		errorList = append(errorList, ValidationError{

@@ -7,10 +7,10 @@ import (
 
 type BaseController struct {
 	Engine      *gin.Engine
-	Persistence *persistence.Manager
+	Persistence persistence.Manager
 }
 
-func NewBaseController(persistence *persistence.Manager) *BaseController {
+func NewBaseController(persistence persistence.Manager) *BaseController {
 	return &BaseController{
 		Engine:      gin.Default(),
 		Persistence: persistence,
