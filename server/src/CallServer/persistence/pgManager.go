@@ -6,7 +6,6 @@ import (
 	"github.com/go-pg/pg/v9"
 	"log"
 	"math"
-	"time"
 )
 
 const DefaultPageSize = 50
@@ -66,7 +65,7 @@ func (pm *PGManager) GetCalls(filterParams map[string]interface{}, pageIdx, page
 		}, nil
 	}
 
-	var calls []model.Call
+	calls := []model.Call{}
 	query := pm.Database.Model(&calls).Order("start_time ASC")
 
 	for key, value := range filterParams {
@@ -83,44 +82,60 @@ func (pm *PGManager) GetCalls(filterParams map[string]interface{}, pageIdx, page
 	}, err
 }
 
-func (pm *PGManager) GetMetadata(startTime time.Time, endTime time.Time) (model.CallMetadata, error) {
-	callMetadata := model.CallMetadata{}
+func (pm *PGManager) GetMetadata() ([]model.CallMetadata, error) {
+	result := []model.CallMetadata{}
 	var queryResults []model.MetadataQueryResult
 
 	err := pm.Database.Model(&model.Call{}).
-		Column("caller", "callee", "inbound").
+		Column("start_time", "caller", "callee", "inbound").
 		ColumnExpr("COUNT(*) as count").
 		ColumnExpr("SUM(duration) as total_duration").
 		ColumnExpr("SUM(call_cost) as total_cost").
-		Where("start_time >= ?", startTime).
-		Where("end_time <= ?", endTime).
-		Group("caller", "callee", "inbound").
+		Group("start_time", "caller", "callee", "inbound").
+		Order("start_time ASC").
 		Select(&queryResults)
 
 	if err != nil {
-		return callMetadata, err
+		return result, err
 	}
 
 	log.Println(queryResults)
 
-	callMetadata.StartTime = startTime
-	callMetadata.EndTime = endTime
-	callMetadata.CallsByCaller = map[string]uint32{}
-	callMetadata.CallsByCallee = map[string]uint32{}
-
-	for _, result := range queryResults {
-		if result.Inbound {
-			callMetadata.TotalInboundDuration += uint32(result.Duration)
-		} else {
-			callMetadata.TotalOutboundDuration += uint32(result.Duration)
+	if len(queryResults) > 0 {
+		metaData := model.CallMetadata{
+			StartTime:     queryResults[0].StartTime,
+			EndTime:       queryResults[0].StartTime,
+			CallsByCaller: map[string]uint32{},
+			CallsByCallee: map[string]uint32{},
 		}
 
-		callMetadata.TotalCalls += uint32(result.Count)
-		callMetadata.TotalCallCost += uint64(result.Cost)
+		for _, queryEntry := range queryResults {
+			if queryEntry.Inbound {
+				metaData.TotalInboundDuration += uint32(queryEntry.Duration)
+			} else {
+				metaData.TotalOutboundDuration += uint32(queryEntry.Duration)
+			}
 
-		callMetadata.CallsByCaller[result.Caller] += uint32(result.Count)
-		callMetadata.CallsByCallee[result.Callee] += uint32(result.Count)
+			metaData.TotalCalls += uint32(queryEntry.Count)
+			metaData.TotalCallCost += uint64(queryEntry.Cost)
+
+			metaData.CallsByCaller[queryEntry.Caller] += uint32(queryEntry.Count)
+			metaData.CallsByCallee[queryEntry.Callee] += uint32(queryEntry.Count)
+
+			if metaData.StartTime.Sub(queryEntry.StartTime).Hours() > 24 {
+				result = append(result, metaData)
+				metaData = model.CallMetadata{
+					StartTime:     metaData.StartTime,
+					EndTime:       queryResults[0].StartTime,
+					CallsByCaller: map[string]uint32{},
+					CallsByCallee: map[string]uint32{},
+				}
+			} else {
+				metaData.EndTime = queryEntry.StartTime
+			}
+		}
+		result = append(result, metaData)
 	}
 
-	return callMetadata, nil
+	return result, nil
 }

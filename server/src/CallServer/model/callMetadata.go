@@ -15,10 +15,11 @@ type CallMetadata struct {
 }
 
 type MetadataQueryResult struct {
-	Caller   string `pg:"caller"`
-	Callee   string `pg:"callee"`
-	Inbound  bool   `pg:"inbound"`
-	Count    uint16 `pg:"count"`
-	Duration uint16 `pg:"total_duration"`
-	Cost     uint32 `pg:"total_cost"`
+	StartTime time.Time `pg:"start_time"`
+	Caller    string    `pg:"caller"`
+	Callee    string    `pg:"callee"`
+	Inbound   bool      `pg:"inbound"`
+	Count     uint16    `pg:"count"`
+	Duration  uint16    `pg:"total_duration"`
+	Cost      uint32    `pg:"total_cost"`
 }

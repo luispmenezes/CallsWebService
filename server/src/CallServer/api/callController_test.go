@@ -63,7 +63,7 @@ func (m *CallMockPersistenceManager) GetCalls(filterParams map[string]interface{
 	}, nil
 }
 
-func (m *CallMockPersistenceManager) GetMetadata(startTime time.Time, endTime time.Time) (model.CallMetadata, error) {
+func (m *CallMockPersistenceManager) GetMetadata() ([]model.CallMetadata, error) {
 	panic("not implemented")
 }
 
