@@ -31,7 +31,7 @@ Details information about the API can be viewed in the **swagger.yaml** file and
 
 ## Configuration
 
-##Server
+### Server
 Example config file can be found in **conf/server.json**
 
 | Name          | Description           | Example  |
@@ -49,7 +49,7 @@ Example config file can be found in **conf/server.json**
 |server.call_cost.outbound_price_2 | Price for the 2nd tier of inbound calls (as integer with 4 cent decimal places) |10| 
 | server.call_cost.outbound_price_threshold | Minute Threshold for price tier of inbound calls | 5 | 
 
-##Client
+### Client
 Example config file can be found in **conf/client.json**
 
 | Name          | Description           | Example  |
