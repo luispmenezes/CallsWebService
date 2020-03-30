@@ -1,0 +1,26 @@
+version: '3'
+services:
+  database:
+    image: "postgres"
+    ports:
+      - "5432:5432"
+    environment:
+        POSTGRES_DB: callWs
+        POSTGRES_USER: callWsAdmin     
+        POSTGRES_PASSWORD: batatas123
+    volumes:
+      - ./db:/docker-entrypoint-initdb.d
+  server:
+    image: "callws/server:1.0"
+    ports:
+      - "8989:8989"
+    depends_on:
+      - "database"
+    volumes:
+      - ./conf/server-docker.json:/usr/bin/callws/server.json
+  client:
+    image: "callws/client:1.0"
+    depends_on:
+      - "server"
+    volumes:
+      - ./conf/client-docker.json:/usr/bin/callws/client.json
