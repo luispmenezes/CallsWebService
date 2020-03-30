@@ -1,5 +1,6 @@
 # CallsWebService
 Simple service to manage call records and extract statistics written in GO and using a Postgres Database.
+This project can be executed locally (from source or using provided executables) or using docker compose.
 
 ## Requirements
 1. Have **docker**, **docker compose**, **go(local only)**  installed
@@ -11,19 +12,19 @@ Simple service to manage call records and extract statistics written in GO and u
 
 ## Build
 ```bash
-cd build
 #Local
-./build-local.sh
+./local-build.sh
 #Docker
-./build.sh
+./docker-build.sh
 ``` 
 
-## Run
+## Running
 ```bash
 #Local
-./run-local.sh
+./local-run-database.sh
+./local-run.sh
 #Docker
-./run.sh
+./docker-run.sh
 ``` 
 
 ## API
@@ -32,7 +33,7 @@ Details information about the API can be viewed in the **swagger.yaml** file and
 ## Configuration
 
 ### Server
-Example config file can be found in **conf/server.json**
+Examples of client configurations can be found in **conf/server.json** and **conf/server-docker.json**
 
 | Name          | Description           | Example  |
 | ------------- |:---------------------:| --------:|
@@ -50,7 +51,7 @@ Example config file can be found in **conf/server.json**
 | server.call_cost.outbound_price_threshold | Minute Threshold for price tier of inbound calls | 5 | 
 
 ### Client
-Example config file can be found in **conf/client.json**
+Examples of client configurations can be found in **conf/client.json** and **conf/client-docker.json** 
 
 | Name          | Description           | Example  |
 | ------------- |:---------------------:| --------:|
