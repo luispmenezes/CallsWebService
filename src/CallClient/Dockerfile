@@ -6,4 +6,4 @@ COPY  . .
 
 RUN go build
 
-CMD [ "./CallServer" ]
+CMD [ "./CallClient" ]

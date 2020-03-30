@@ -5,12 +5,16 @@ import (
 	"CallServer/config"
 	"CallServer/persistence"
 	"log"
+	"os"
 )
 
-const DefaultConfigPath = "./config.json"
+const DefaultConfigPath = "./server.json"
 
 func main() {
 	configFilePath := DefaultConfigPath
+	if len(os.Args) == 2 {
+		configFilePath = os.Args[1]
+	}
 
 	err := config.LoadConfigurationFromPath(configFilePath)
 	if err != nil {
