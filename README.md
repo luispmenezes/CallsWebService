@@ -8,7 +8,15 @@ This project can be executed locally (from source or using provided executables)
 - [Install Docker Compose](https://docs.docker.com/compose/install/)
 - [Install Go](https://golang.org/doc/install)
 2. Have docker running.
-3. Have port 8989 (and 5432 if running locally) on your system available
+3. Have port 8989 and 5432 free on your system available
+
+## Scripts
+ 
+ * **local-build.sh**: build executables for server and client to /bin.
+ * **local-run.sh**: run binaries in /bin in the background writting logs to server.log and client.log.
+ * **local-run-database.sh**: run database in Postgres Docker container mapping to 5423.
+ * **docker-build.sh**: build docker images callws/server and callws/client.
+ * **docker-run.sh**: run docker images for database, server and client using docker-compose. Database maps to 5432 and server maps to 8989
 
 ## Build
 ```bash
